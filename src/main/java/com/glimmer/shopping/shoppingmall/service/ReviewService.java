@@ -1,24 +1,28 @@
 package com.glimmer.shopping.shoppingmall.service;
 
 import com.glimmer.shopping.shoppingmall.entity.ProductReview;
-import com.glimmer.shopping.shoppingmall.repository.ProductReviewRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.glimmer.shopping.shoppingmall.util.Result;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
-public class ReviewService {
-    @Autowired
-    private ProductReviewRepository reviewRepository;
+/**
+ * @author Glimmer
+ */
+public interface ReviewService {
+    
+    /**
+     * 添加商品评论
+     *
+     * @param review
+     * @return
+     */
+    Result<ProductReview> addReview(ProductReview review);
 
-    public ProductReview addReview(ProductReview review) {
-        review.setCreateTime(LocalDateTime.now());
-        return reviewRepository.save(review);
-    }
-
-    public List<ProductReview> getReviewsByProduct(Long productId) {
-        return reviewRepository.findByProductId(productId);
-    }
+    /**
+     * 根据商品ID获取评论列表
+     *
+     * @param productId
+     * @return
+     */
+    Result<List<ProductReview>> getReviewsByProduct(String productId);
 }

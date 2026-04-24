@@ -14,5 +14,5 @@ public interface ProductReviewRepository extends MongoRepository<ProductReview, 
      * @param productId
      * @return
      */
-    List<ProductReview> findByProductId(Long productId);
+    List<ProductReview> findByProductId(String productId);
 }

@@ -7,7 +7,7 @@ import lombok.Data;
  */
 @Data
 public class OrderRequest {
-    private Long productId;
+    private String productId;
     private Integer quantity;
     // 可以添加更多字段，比如 userId、addressId 等
 }

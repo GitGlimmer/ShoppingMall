@@ -38,27 +38,32 @@ public class MallController {
 
     @ApiOperation("新增商品")
     @PostMapping("/addProduct")
-    public Result<Product> addProduct(@RequestBody Product product) {
+    public Result<String> addProduct(@RequestBody Product product) {
         return productService.addProduct(product);
+    }
+
+    @ApiOperation("批量新增商品")
+    @PostMapping("/addProducts")
+    public Result<List<String>> addProducts(@RequestBody List<Product> products) {
+        return productService.addProducts(products);
     }
 
     @ApiOperation("删除商品")
     @DeleteMapping("/deleteProduct/{id}")
-    public Result deleteProduct(@PathVariable Long id) {
+    public Result<String> deleteProduct(@PathVariable String id) {
         return productService.deleteProduct(id);
     }
 
     @ApiOperation("修改商品")
     @PutMapping("/updateProduct")
-    public Result<Product> updateProduct(@RequestBody Product product) {
+    public Result<String> updateProduct(@RequestBody Product product) {
         return productService.updateProduct(product);
     }
 
-
     @ApiOperation("获取商品详情")
     @GetMapping("/product/{id}")
-    public Result<Product> getProduct(@PathVariable Long id) {
-        return Result.success(productService.getProduct(id));
+    public Result<Product> getProduct(@PathVariable String id) {
+        return productService.getProduct(id);
     }
 
     @ApiOperation("获取商品列表")
@@ -70,32 +75,30 @@ public class MallController {
     @ApiOperation("下单")
     @PostMapping("/order")
     public Result<String> createOrder(@RequestBody OrderRequest request) {
-        productService.reduceStock(request.getProductId(), request.getQuantity());
-        return Result.success();
+        return productService.createOrder(request);
     }
 
     @ApiOperation("支付记录")
     @PostMapping("/payment")
     public Result<PaymentTransaction> pay(@RequestBody PaymentTransaction transaction) {
-        return Result.success(paymentService.createTransaction(transaction));
+        return paymentService.createTransaction(transaction);
     }
 
     @ApiOperation("添加商品评论")
     @PostMapping("/review")
     public Result<ProductReview> addReview(@RequestBody ProductReview review) {
-        return Result.success(reviewService.addReview(review));
+        return reviewService.addReview(review);
     }
 
     @ApiOperation("添加商品到购物车")
     @PostMapping("/cart/add")
-    public Result addToCart(@RequestParam Long userId, @RequestParam Long productId, @RequestParam Integer quantity) {
-        cartService.addToCart(userId, productId, quantity);
-        return Result.success();
+    public Result addToCart(@RequestParam String userId, @RequestParam String productId, @RequestParam Integer quantity) {
+        return cartService.addToCart(userId, productId, quantity);
     }
 
     @ApiOperation("获取销售分析数据")
     @GetMapping("/analytics/sales")
     public Result<List<Map<String, Object>>> getSales(@RequestParam String start, @RequestParam String end) {
-        return Result.success(analyticsService.getDailySales(start, end));
+        return analyticsService.getDailySales(start, end);
     }
 }

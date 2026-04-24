@@ -3,7 +3,7 @@ com\glimmer\shopping\shoppingmall\Handler\GlobalExceptionHandler.class
 com\glimmer\shopping\shoppingmall\service\AnalyticsService.class
 com\glimmer\shopping\shoppingmall\service\ProductService.class
 com\glimmer\shopping\shoppingmall\service\CartService.class
-com\glimmer\shopping\shoppingmall\entity\ProductReview$ProductReviewBuilder.class
+com\glimmer\shopping\shoppingmall\util\UUIDUtil.class
 com\glimmer\shopping\shoppingmall\entity\Order.class
 com\glimmer\shopping\shoppingmall\repository\OrderRepository.class
 com\glimmer\shopping\shoppingmall\util\Result.class

@@ -6,4 +6,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 /**
  * @author Glimmer
  */
-public interface ProductRepository extends JpaRepository<Product, Long> {}
+public interface ProductRepository extends JpaRepository<Product, String> {}

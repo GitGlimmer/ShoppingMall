@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 @DS("oracle")
-public interface PaymentTransactionRepository extends JpaRepository<PaymentTransaction, Long> {
+public interface PaymentTransactionRepository extends JpaRepository<PaymentTransaction, String> {
 }

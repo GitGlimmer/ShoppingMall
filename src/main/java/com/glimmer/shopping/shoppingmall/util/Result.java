@@ -29,22 +29,6 @@ public class Result<T> {
     // 构造器私有，通过静态方法创建
     private Result() {}
 
-    // 成功（无数据）
-    public static <T> Result<T> success() {
-        Result<T> result = new Result<>();
-        result.setCode(200);
-        result.setMessage("success");
-        return result;
-    }
-
-    // 成功（带数据）
-    public static <T> Result<T> success(T data) {
-        Result<T> result = new Result<>();
-        result.setCode(200);
-        result.setMessage("success");
-        result.setData(data);
-        return result;
-    }
 
     // 成功（自定义消息和数据）
     public static <T> Result<T> success(String message, T data) {
@@ -63,9 +47,9 @@ public class Result<T> {
         return result;
     }
 
-    // 失败（默认 400）
+    // 失败（默认 500）
     public static <T> Result<T> error(String message) {
-        return error(400, message);
+        return error(500, message);
     }
 
     // 失败（带数据）
@@ -75,5 +59,27 @@ public class Result<T> {
         result.setMessage(message);
         result.setData(data);
         return result;
+    }
+
+    // 成功（无数据，中文消息）
+    public static <T> Result<T> success() {
+        Result<T> result = new Result<>();
+        result.setCode(200);
+        result.setMessage("成功");
+        return result;
+    }
+
+    // 成功（带数据，中文消息）
+    public static <T> Result<T> success(T data) {
+        Result<T> result = new Result<>();
+        result.setCode(200);
+        result.setMessage("成功");
+        result.setData(data);
+        return result;
+    }
+
+    // 失败（中文消息，带数据）
+    public static <T> Result<T> error(String message, T data) {
+        return error(500, message, data);
     }
 }
