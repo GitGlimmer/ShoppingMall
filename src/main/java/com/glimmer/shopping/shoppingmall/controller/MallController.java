@@ -37,15 +37,34 @@ public class MallController {
 
 
     @ApiOperation("新增商品")
-    @PostMapping("/product")
+    @PostMapping("/addProduct")
     public Result<Product> addProduct(@RequestBody Product product) {
         return productService.addProduct(product);
     }
+
+    @ApiOperation("删除商品")
+    @DeleteMapping("/deleteProduct/{id}")
+    public Result deleteProduct(@PathVariable Long id) {
+        return productService.deleteProduct(id);
+    }
+
+    @ApiOperation("修改商品")
+    @PutMapping("/updateProduct")
+    public Result<Product> updateProduct(@RequestBody Product product) {
+        return productService.updateProduct(product);
+    }
+
 
     @ApiOperation("获取商品详情")
     @GetMapping("/product/{id}")
     public Result<Product> getProduct(@PathVariable Long id) {
         return Result.success(productService.getProduct(id));
+    }
+
+    @ApiOperation("获取商品列表")
+    @GetMapping("/productList")
+    public Result<List<Product>> getProductList() {
+        return productService.getProductList();
     }
 
     @ApiOperation("下单")
