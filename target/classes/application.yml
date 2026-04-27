@@ -1,3 +1,5 @@
+server:
+  port: 8081
 spring:
   datasource:
     dynamic:
@@ -5,7 +7,7 @@ spring:
       strict: false
       datasource:
         mysql:
-          url: jdbc:mysql://192.168.99.200:3306/mall_db?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false
+          url: jdbc:mysql://192.168.99.200:3306/mall_db?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false&connectTimeout=30000&socketTimeout=30000
           username: root
           password: ymj521.YY
           driver-class-name: com.mysql.cj.jdbc.Driver
@@ -15,7 +17,7 @@ spring:
           password: ymj521.YY
           driver-class-name: oracle.jdbc.OracleDriver
         clickhouse:
-          url: jdbc:clickhouse://192.168.99.200:8123/default?allowPublicKeyRetrieval=true&useSSL=false
+          url: jdbc:clickhouse://192.168.99.200:8123/mall_analytics?allowPublicKeyRetrieval=true&useSSL=false
           username: default
           password: ymj521.YY
           driver-class-name: com.clickhouse.jdbc.ClickHouseDriver

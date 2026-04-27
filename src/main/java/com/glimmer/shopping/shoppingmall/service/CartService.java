@@ -1,5 +1,6 @@
 package com.glimmer.shopping.shoppingmall.service;
 
+import com.glimmer.shopping.shoppingmall.dto.CartRequest;
 import com.glimmer.shopping.shoppingmall.util.Result;
 
 import java.util.Map;
@@ -12,11 +13,9 @@ public interface CartService {
     /**
      * 添加商品到购物车
      *
-     * @param userId
-     * @param productId
-     * @param quantity
+     * @param cartRequest 购物车请求参数
      */
-    Result addToCart(String userId, String productId, Integer quantity);
+    Result addToCart(CartRequest cartRequest);
 
     /**
      * 获取购物车内容
