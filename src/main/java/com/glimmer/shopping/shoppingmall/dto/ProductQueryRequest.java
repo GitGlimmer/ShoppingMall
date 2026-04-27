@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * 商品查询请求参数
- * 用于封装GET请求的参数，避免在URL中直接显示敏感信息
+ * 用于封装请求的参数，避免在URL中直接显示敏感信息
  */
 @Data
 public class ProductQueryRequest {
@@ -72,21 +72,38 @@ public class ProductQueryRequest {
     /** 排序方向（ASC/DESC） */
     private String sortDirection;
     
-    /** 用户ID（用于互动记录） */
+    /** 用户ID */
     private String userId;
     
-    /** 客户端IP（用于互动记录） */
+    /** 客户端IP */
     private String clientIp;
     
-    /** 用户代理信息（用于互动记录） */
+    /** 用户代理信息 */
     private String userAgent;
     
-    /** 会话ID（用于互动记录） */
+    /** 会话ID */
     private String sessionId;
     
-    /** 默认构造方法 */
+    /** 互动类型（VIEW/FAVORITE/LIKE） */
+    private String interactionType;
+    
+    /** 评分值 */
+    private Double rating;
+    
+    /** 评分评论 */
+    private String comment;
+    
+    /** 是否匿名 */
+    private Boolean isAnonymous;
+    
+    /** 页码 */
+    private Integer page = 1;
+    
+    /** 每页数量 */
+    private Integer size = 10;
+    
     public ProductQueryRequest() {
-        this.limit = 10; // 默认限制10条
-        this.sortDirection = "DESC"; // 默认降序
+        this.limit = 10;
+        this.sortDirection = "DESC";
     }
 }

@@ -1,6 +1,7 @@
 package com.glimmer.shopping.shoppingmall.service;
 
 import com.glimmer.shopping.shoppingmall.entity.ProductRating;
+import com.glimmer.shopping.shoppingmall.util.PageResult;
 import com.glimmer.shopping.shoppingmall.util.Result;
 
 import java.util.List;
@@ -33,9 +34,9 @@ public interface ProductRatingService {
     Result<List<ProductRating>> getUserRatings(String userId);
     
     /**
-     * 获取商品的评分记录
+     * 获取商品的评分记录（分页）
      */
-    Result<List<ProductRating>> getProductRatings(String productId, int page, int size);
+    PageResult<ProductRating> getProductRatings(String productId, Integer page, Integer size);
     
     /**
      * 检查用户是否已评分
@@ -50,10 +51,10 @@ public interface ProductRatingService {
     /**
      * 获取热门评分商品（按评分数量排序）
      */
-    Result<List<Map<String, Object>>> getTopRatedProducts(int limit);
+    Result<List<Map<String, Object>>> getTopRatedProducts(Integer limit);
     
     /**
      * 获取最新评分记录
      */
-    Result<List<ProductRating>> getRecentRatings(int limit);
+    Result<List<ProductRating>> getRecentRatings(Integer limit);
 }

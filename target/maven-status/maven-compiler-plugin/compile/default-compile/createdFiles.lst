@@ -16,7 +16,6 @@ com\glimmer\shopping\shoppingmall\controller\MallController.class
 com\glimmer\shopping\shoppingmall\service\ClickHouseService$1.class
 com\glimmer\shopping\shoppingmall\service\ProductInteractionService.class
 com\glimmer\shopping\shoppingmall\service\PaymentService.class
-com\glimmer\shopping\shoppingmall\util\DirectClickHouseTest.class
 com\glimmer\shopping\shoppingmall\entity\User.class
 com\glimmer\shopping\shoppingmall\repository\ProductRatingRepository.class
 com\glimmer\shopping\shoppingmall\service\ClickHouseService$4.class
@@ -33,12 +32,12 @@ com\glimmer\shopping\shoppingmall\service\ClickHouseService$3.class
 com\glimmer\shopping\shoppingmall\entity\Order.class
 com\glimmer\shopping\shoppingmall\util\Result.class
 com\glimmer\shopping\shoppingmall\entity\Product.class
+com\glimmer\shopping\shoppingmall\util\PageResult.class
 com\glimmer\shopping\shoppingmall\dto\ProductQueryRequest.class
 com\glimmer\shopping\shoppingmall\entity\ProductInteraction.class
 com\glimmer\shopping\shoppingmall\dto\OrderRequest.class
 com\glimmer\shopping\shoppingmall\config\Knife4jConfig.class
 com\glimmer\shopping\shoppingmall\service\ClickHouseService$2.class
 com\glimmer\shopping\shoppingmall\repository\ProductReviewRepository.class
-com\glimmer\shopping\shoppingmall\util\SimpleClickHouseTest.class
 com\glimmer\shopping\shoppingmall\ShoppingMallApplication.class
 com\glimmer\shopping\shoppingmall\repository\ProductInteractionRepository.class

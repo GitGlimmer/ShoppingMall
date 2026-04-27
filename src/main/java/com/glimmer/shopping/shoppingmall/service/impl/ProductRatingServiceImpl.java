@@ -5,6 +5,7 @@ import com.glimmer.shopping.shoppingmall.entity.ProductRating;
 import com.glimmer.shopping.shoppingmall.repository.ProductRatingRepository;
 import com.glimmer.shopping.shoppingmall.repository.ProductRepository;
 import com.glimmer.shopping.shoppingmall.service.ProductRatingService;
+import com.glimmer.shopping.shoppingmall.util.PageResult;
 import com.glimmer.shopping.shoppingmall.util.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,34 +183,32 @@ public class ProductRatingServiceImpl implements ProductRatingService {
     }
     
     @Override
-    public Result<List<ProductRating>> getProductRatings(String productId, int page, int size) {
+    public PageResult<ProductRating> getProductRatings(String productId, Integer page, Integer size) {
+        if (productId == null || productId.trim().isEmpty()) {
+            return PageResult.of(new ArrayList<>(), page, size);
+        }
+        
+        if (page == null || page < 1) page = 1;
+        if (size == null || size <= 0) size = 10;
+        
         try {
-            if (productId == null || productId.trim().isEmpty()) {
-                return Result.error("商品ID不能为空");
-            }
-            
-            if (page < 0) page = 0;
-            if (size <= 0) size = 10;
-            
-            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ratingTime"));
-            
-            // 由于MongoDB的Pageable查询需要特殊处理，这里先获取全部再分页
             List<ProductRating> allRatings = productRatingRepository.findByProductId(productId);
             
-            // 手动分页
-            int start = page * size;
+            allRatings.sort((r1, r2) -> r2.getRatingTime().compareTo(r1.getRatingTime()));
+            
+            int start = (page - 1) * size;
             int end = Math.min(start + size, allRatings.size());
             
             if (start >= allRatings.size()) {
-                return Result.success(new ArrayList<>());
+                return PageResult.of(new ArrayList<>(), 0L, page, size);
             }
             
             List<ProductRating> pagedRatings = allRatings.subList(start, end);
             
-            return Result.success(pagedRatings);
+            return PageResult.of(pagedRatings, (long) allRatings.size(), page, size);
         } catch (Exception e) {
             log.error("获取商品评分记录失败，商品ID: {}", productId, e);
-            return Result.error("获取商品评分记录失败");
+            return PageResult.of(new ArrayList<>(), page, size);
         }
     }
     
@@ -257,7 +256,7 @@ public class ProductRatingServiceImpl implements ProductRatingService {
     }
     
     @Override
-    public Result<List<Map<String, Object>>> getTopRatedProducts(int limit) {
+    public Result<List<Map<String, Object>>> getTopRatedProducts(Integer limit) {
         try {
             if (limit <= 0) limit = 10;
             
@@ -310,7 +309,7 @@ public class ProductRatingServiceImpl implements ProductRatingService {
     }
     
     @Override
-    public Result<List<ProductRating>> getRecentRatings(int limit) {
+    public Result<List<ProductRating>> getRecentRatings(Integer limit) {
         try {
             if (limit <= 0) limit = 10;
             

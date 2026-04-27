@@ -3,12 +3,14 @@ package com.glimmer.shopping.shoppingmall.service.impl;
 import com.glimmer.shopping.shoppingmall.entity.ProductInteraction;
 import com.glimmer.shopping.shoppingmall.repository.ProductInteractionRepository;
 import com.glimmer.shopping.shoppingmall.service.ProductInteractionService;
+import com.glimmer.shopping.shoppingmall.util.PageResult;
 import com.glimmer.shopping.shoppingmall.util.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,17 +123,26 @@ public class ProductInteractionServiceImpl implements ProductInteractionService 
     }
     
     @Override
-    public Result<List<ProductInteraction>> getRecentInteractions(String productId, int limit) {
+    public PageResult<ProductInteraction> getRecentInteractions(String productId, Integer limit) {
+        if (productId == null || productId.trim().isEmpty()) {
+            return PageResult.of(new ArrayList<>(), 1, 10);
+        }
+        
+        if (limit == null || limit <= 0) limit = 10;
+        
         try {
             List<ProductInteraction> allInteractions = productInteractionRepository.findByProductId(productId);
+            
+            allInteractions.sort((a, b) -> b.getInteractionTime().compareTo(a.getInteractionTime()));
+            
             List<ProductInteraction> recentInteractions = allInteractions.stream()
-                    .sorted((a, b) -> b.getInteractionTime().compareTo(a.getInteractionTime()))
                     .limit(limit)
                     .collect(Collectors.toList());
-            return Result.success(recentInteractions);
+            
+            return PageResult.of(recentInteractions, (long) allInteractions.size(), 1, limit);
         } catch (Exception e) {
             log.error("获取最近互动记录失败，商品ID: {}", productId, e);
-            return Result.error("获取最近互动记录失败");
+            return PageResult.of(new ArrayList<>(), 1, limit);
         }
     }
 }

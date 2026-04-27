@@ -1,6 +1,7 @@
 package com.glimmer.shopping.shoppingmall.service;
 
 import com.glimmer.shopping.shoppingmall.entity.ProductInteraction;
+import com.glimmer.shopping.shoppingmall.util.PageResult;
 import com.glimmer.shopping.shoppingmall.util.Result;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public interface ProductInteractionService {
     Result<String> removeInteraction(String productId, String userId, String interactionType);
     
     /**
-     * 获取最近互动记录
+     * 获取最近互动记录（分页）
      */
-    Result<List<ProductInteraction>> getRecentInteractions(String productId, int limit);
+    PageResult<ProductInteraction> getRecentInteractions(String productId, Integer limit);
 }
