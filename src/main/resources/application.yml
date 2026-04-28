@@ -17,7 +17,7 @@ spring:
           password: ymj521.YY
           driver-class-name: oracle.jdbc.OracleDriver
         clickhouse:
-          url: jdbc:clickhouse://192.168.99.200:8123/mall_analytics?allowPublicKeyRetrieval=true&useSSL=false
+          url: jdbc:clickhouse://192.168.99.200:8123/mall_analytics?compress=0
           username: default
           password: ymj521.YY
           driver-class-name: com.clickhouse.jdbc.ClickHouseDriver
