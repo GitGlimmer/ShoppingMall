@@ -70,6 +70,9 @@ coverage/
 *.cache
 .cache/
 
+# Trae IDE
+.trae/
+
 # Misc
 *.tmp
 *.bak
