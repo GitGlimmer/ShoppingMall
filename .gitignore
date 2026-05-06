@@ -3,6 +3,7 @@
 
 # Log files
 *.log
+logs/
 
 # Package files
 *.jar
@@ -24,6 +25,7 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
 
 # IDE
 .idea/
@@ -34,10 +36,14 @@ buildNumber.properties
 .project
 .classpath
 .settings/
+*.swp
+*.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Spring Boot
 spring-shell.log
@@ -45,4 +51,26 @@ spring-shell.log
 # Database
 *.db
 *.sql
-```
+data/
+
+# Configuration
+application-local.yml
+application-local.properties
+application-dev.yml
+application-dev.properties
+application-prod.yml
+application-prod.properties
+
+# Testing
+surefire-reports/
+jacoco*.exec
+coverage/
+
+# Cache
+*.cache
+.cache/
+
+# Misc
+*.tmp
+*.bak
+*.backup
