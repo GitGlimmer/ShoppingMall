@@ -5,7 +5,6 @@ import com.glimmer.shopping.shoppingmall.service.PaymentService;
 import com.glimmer.shopping.shoppingmall.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,8 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "支付管理")
 public class PaymentController {
 
-    @Autowired
-    private PaymentService paymentService;
+    private final PaymentService paymentService;
+
+    public PaymentController(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
 
     @ApiOperation("创建支付交易")
     @PostMapping

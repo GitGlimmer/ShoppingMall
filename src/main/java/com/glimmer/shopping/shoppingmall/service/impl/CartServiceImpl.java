@@ -4,7 +4,6 @@ import com.glimmer.shopping.shoppingmall.dto.CartRequest;
 import com.glimmer.shopping.shoppingmall.service.CartService;
 import com.glimmer.shopping.shoppingmall.util.Result;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -13,20 +12,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 购物车服务实现类
+ * 
  * @author Glimmer
  */
 @Service
 @Slf4j
 public class CartServiceImpl implements CartService {
-    @Autowired
-    private StringRedisTemplate redisTemplate;
-
+    
+    private final StringRedisTemplate redisTemplate;
+    
     private static final String CART_KEY_PREFIX = "cart:user:";
+
+    public CartServiceImpl(StringRedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     @Override
     public Result addToCart(CartRequest cartRequest) {
         try {
-            // 参数验证
             if (cartRequest == null) {
                 return Result.error("请求参数不能为空");
             }

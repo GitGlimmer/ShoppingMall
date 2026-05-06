@@ -12,8 +12,11 @@ public class ProductQueryRequest {
     /** 商品ID */
     private String id;
     
-    /** 商品分类 */
+    /** 商品分类名称（保留用于兼容旧接口） */
     private String category;
+    
+    /** 商品分类ID（新接口使用） */
+    private String categoryId;
     
     /** 搜索关键字 */
     private String keyword;
@@ -30,8 +33,11 @@ public class ProductQueryRequest {
     /** 商品状态 */
     private String status;
     
-    /** 商品品牌 */
+    /** 商品品牌名称（保留用于兼容旧接口） */
     private String brand;
+    
+    /** 商品品牌ID（新接口使用） */
+    private String brandId;
     
     /** 商品标签 */
     private String tag;
@@ -101,6 +107,12 @@ public class ProductQueryRequest {
     
     /** 每页数量 */
     private Integer size = 10;
+    
+    /** 开始日期 */
+    private String startDate;
+    
+    /** 结束日期 */
+    private String endDate;
     
     public ProductQueryRequest() {
         this.limit = 10;

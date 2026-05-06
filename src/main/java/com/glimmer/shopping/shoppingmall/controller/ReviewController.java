@@ -6,7 +6,6 @@ import com.glimmer.shopping.shoppingmall.service.ReviewService;
 import com.glimmer.shopping.shoppingmall.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,8 +15,11 @@ import java.util.List;
 @Api(tags = "评论管理")
 public class ReviewController {
 
-    @Autowired
-    private ReviewService reviewService;
+    private final ReviewService reviewService;
+
+    public ReviewController(ReviewService reviewService) {
+        this.reviewService = reviewService;
+    }
 
     @ApiOperation("添加商品评论")
     @PostMapping

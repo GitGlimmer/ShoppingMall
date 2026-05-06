@@ -5,7 +5,6 @@ import com.glimmer.shopping.shoppingmall.dto.SalesQueryRequest;
 import com.glimmer.shopping.shoppingmall.service.AnalyticsService;
 import com.glimmer.shopping.shoppingmall.util.Result;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +14,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 分析服务实现类
+ * 
  * @author Glimmer
  */
 @Service
 @Slf4j
 @DS("clickhouse")
 public class AnalyticsServiceImpl implements AnalyticsService {
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    
+    private final JdbcTemplate jdbcTemplate;
+
+    public AnalyticsServiceImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Result<List<Map<String, Object>>> getSales(SalesQueryRequest request) {
@@ -38,7 +43,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 return Result.error("开始日期和结束日期不能为空");
             }
             
-            // 模拟销售数据查询
             List<Map<String, Object>> salesData = new ArrayList<>();
             Map<String, Object> day1 = new HashMap<>();
             day1.put("date", "2024-01-01");

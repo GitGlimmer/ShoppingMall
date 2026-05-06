@@ -1,46 +1,10 @@
-# Maven
-/target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-
-# Test files - ignore all test directories and files
-src/test/
-
-# IntelliJ IDEA
-.idea/
-*.iws
-*.iml
-*.ipr
-
-# Eclipse
-.classpath
-.project
-.settings/
-
-# NetBeans
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-# VS Code
-.vscode/
-
-# Mac
-.DS_Store
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
+# Compiled class files
+*.class
 
 # Log files
 *.log
-logs/
 
-# Package Files
+# Package files
 *.jar
 *.war
 *.nar
@@ -49,107 +13,36 @@ logs/
 *.tar.gz
 *.rar
 
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Spring Boot
+spring-shell.log
+
 # Database
 *.db
-*.sqlite
-
-# Application properties
-application-dev.properties
-application-prod.properties
-
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Build output
-build/
-out/
-
-# Gradle
-.gradle/
-build/
-!gradle/wrapper/gradle-wrapper.jar
-
-# Maven wrapper
-.mvn/
-
-# Trae IDE
-.trae/
-
-# Temporary files
-tmp/
-temp/
-
-# Test reports
-test-output/
-reports/
-
-# Coverage data
-.coverage
-.coverage.*
-coverage/
-htmlcov/
-.pytest_cache/
-.coverage
-.coverage.*
-
-# Package files
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
-*.zip
-
-# OS generated files
-Icon?
-
-# Editor directories and files
-.vscode/
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Spring Boot specific
-application.properties
-application.yml
-
-# Local configuration files (should not be committed)
-*.local
-
-# Ignore all .class files
-*.class
-
-# Ignore package-lock.json and yarn.lock (if using Node.js)
-package-lock.json
-yarn.lock
-
-# Ignore node_modules (if using Node.js)
-node_modules/
-
-# Ignore IDE specific files
-*.swp
-*.swo
-*~
-
-# Ignore all log files
-log/
-logs/
-*.log
-
-# Ignore all .tmp files
-*.tmp
-
-# Ignore all .bak files
-*.bak
-
-# Ignore all .orig files
-*.orig
+*.sql
+```
