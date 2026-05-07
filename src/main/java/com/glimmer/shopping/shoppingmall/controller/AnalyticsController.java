@@ -48,8 +48,8 @@ public class AnalyticsController {
     }
 
     @ApiOperation("获取分类销售占比")
-    @PostMapping("/sales/category")
-    public Result<List<Map<String, Object>>> getCategorySalesRatio(@RequestBody(required = false) Map<String, Object> request) {
+    @GetMapping("/sales/category")
+    public Result<List<Map<String, Object>>> getCategorySalesRatio() {
         List<Map<String, Object>> categorySales = productRepository.findCategorySalesStats();
         
         BigDecimal totalSales = BigDecimal.ZERO;
@@ -62,9 +62,10 @@ public class AnalyticsController {
             }
         }
         
-        List<Map<String, Object>> result = new ArrayList<>();
+        List<Map<String, Object>> filteredResult = new ArrayList<>();
+        BigDecimal otherSales = BigDecimal.ZERO;
+        
         for (Map<String, Object> item : categorySales) {
-            Map<String, Object> ratioItem = new HashMap<>();
             String category = (String) item.get("category");
             Object salesObj = item.get("total_sales");
             
@@ -75,27 +76,43 @@ public class AnalyticsController {
                 sales = BigDecimal.valueOf(((Number) salesObj).doubleValue());
             }
             
-            ratioItem.put("category", category);
-            ratioItem.put("sales", sales.longValue());
+            if (sales.compareTo(BigDecimal.ZERO) == 0) {
+                continue;
+            }
             
             if (totalSales.compareTo(BigDecimal.ZERO) > 0) {
                 BigDecimal ratio = sales.divide(totalSales, 4, RoundingMode.HALF_UP)
                         .multiply(BigDecimal.valueOf(100));
-                ratioItem.put("ratio", ratio.setScale(2, RoundingMode.HALF_UP).doubleValue());
-            } else {
-                ratioItem.put("ratio", 0.0);
+                
+                if (ratio.compareTo(BigDecimal.valueOf(3)) < 0) {
+                    otherSales = otherSales.add(sales);
+                } else {
+                    Map<String, Object> ratioItem = new HashMap<>();
+                    ratioItem.put("category", category);
+                    ratioItem.put("sales", sales.longValue());
+                    ratioItem.put("ratio", ratio.setScale(2, RoundingMode.HALF_UP).doubleValue());
+                    filteredResult.add(ratioItem);
+                }
             }
-            
-            result.add(ratioItem);
         }
         
-        result.sort((a, b) -> {
+        if (otherSales.compareTo(BigDecimal.ZERO) > 0 && totalSales.compareTo(BigDecimal.ZERO) > 0) {
+            Map<String, Object> otherItem = new HashMap<>();
+            BigDecimal otherRatio = otherSales.divide(totalSales, 4, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(100));
+            otherItem.put("category", "其他");
+            otherItem.put("sales", otherSales.longValue());
+            otherItem.put("ratio", otherRatio.setScale(2, RoundingMode.HALF_UP).doubleValue());
+            filteredResult.add(otherItem);
+        }
+        
+        filteredResult.sort((a, b) -> {
             Double ratioA = (Double) a.get("ratio");
             Double ratioB = (Double) b.get("ratio");
             return ratioB.compareTo(ratioA);
         });
         
-        return Result.success(result);
+        return Result.success(filteredResult);
     }
 
     @ApiOperation("获取数据概览统计")
