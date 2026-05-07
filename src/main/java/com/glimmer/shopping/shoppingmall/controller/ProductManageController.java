@@ -5,6 +5,8 @@ import com.glimmer.shopping.shoppingmall.util.PageResult;
 import com.glimmer.shopping.shoppingmall.dto.ProductQueryRequest;
 import com.glimmer.shopping.shoppingmall.entity.Product;
 import com.glimmer.shopping.shoppingmall.service.ProductService;
+import com.glimmer.shopping.shoppingmall.util.ExcelUtil;
+import com.glimmer.shopping.shoppingmall.util.FileUtil;
 import com.glimmer.shopping.shoppingmall.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,10 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +23,8 @@ import java.util.Map;
 @RequestMapping("/api/product/manage")
 @Api(tags = "商品管理-基础操作")
 public class ProductManageController {
+
+    private static final String IMAGE_BASE_URL = "/api/product/manage/image/";
 
     private final ProductService productService;
 
@@ -83,28 +83,11 @@ public class ProductManageController {
     @PostMapping("/upload")
     public Result<String> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
-            if (file.isEmpty()) {
-                return Result.error("请选择要上传的文件");
-            }
-            
-            String originalFilename = file.getOriginalFilename();
-            if (originalFilename == null || !originalFilename.toLowerCase().matches(".*\\.(jpg|jpeg|png|gif)$")) {
-                return Result.error("只支持图片文件（jpg/jpeg/png/gif）");
-            }
-            
-            String uploadPath = "uploads/images/";
-            Path path = Paths.get(uploadPath);
-            if (!Files.exists(path)) {
-                Files.createDirectories(path);
-            }
-            
-            String fileName = System.currentTimeMillis() + "_" + originalFilename;
-            Path filePath = path.resolve(fileName);
-            Files.copy(file.getInputStream(), filePath);
-            
-            String imageUrl = "/api/product/manage/image/" + fileName;
+            String imageUrl = FileUtil.uploadImage(file, IMAGE_BASE_URL);
             return Result.success(imageUrl);
-        } catch (IOException e) {
+        } catch (IllegalArgumentException e) {
+            return Result.error(e.getMessage());
+        } catch (RuntimeException e) {
             return Result.error("图片上传失败");
         }
     }
@@ -112,38 +95,16 @@ public class ProductManageController {
     @ApiOperation("获取图片")
     @GetMapping("/image/{fileName}")
     public ResponseEntity<byte[]> getImage(@PathVariable String fileName) {
-        try {
-            Path filePath = Paths.get("uploads/images/" + fileName);
-            if (!Files.exists(filePath)) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            byte[] imageBytes = Files.readAllBytes(filePath);
-            String contentType = Files.probeContentType(filePath);
-            
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .body(imageBytes);
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        return FileUtil.getImage(fileName);
     }
 
     @ApiOperation("批量导入商品")
     @PostMapping("/batch/upload")
     public Result<Integer> batchUploadProducts(@RequestParam("file") MultipartFile file) {
+        if (!FileUtil.isValidExcelFile(file)) {
+            return Result.error("请选择有效的Excel文件（.xlsx或.xls）");
+        }
         try {
-            if (file.isEmpty()) {
-                return Result.error("请选择要上传的文件");
-            }
-            
-            String originalFilename = file.getOriginalFilename();
-            if (originalFilename == null || 
-                (!originalFilename.toLowerCase().endsWith(".xlsx") && 
-                 !originalFilename.toLowerCase().endsWith(".xls"))) {
-                return Result.error("只支持Excel文件（.xlsx或.xls）");
-            }
-            
             return Result.success(0);
         } catch (Exception e) {
             return Result.error("批量导入失败");
@@ -154,44 +115,23 @@ public class ProductManageController {
     @GetMapping("/template/download")
     public ResponseEntity<byte[]> downloadTemplate() {
         try {
-            org.apache.poi.ss.usermodel.Workbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
-            org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("商品导入模板");
-            
             String[] headers = {
-                "商品名称", "分类", "品牌", "价格", "库存", 
+                "商品名称", "分类", "品牌", "价格", "库存",
                 "描述", "规格", "产地", "单位", "标签", "状态"
             };
-            
-            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(0);
-            for (int i = 0; i < headers.length; i++) {
-                org.apache.poi.ss.usermodel.Cell cell = headerRow.createCell(i);
-                cell.setCellValue(headers[i]);
-            }
-            
+
             String[] exampleData = {
                 "示例商品", "电子产品", "示例品牌", "99.99", "100",
                 "这是一个示例商品描述", "规格说明", "中国", "件", "热门,新品", "1"
             };
-            
-            org.apache.poi.ss.usermodel.Row exampleRow = sheet.createRow(1);
-            for (int i = 0; i < exampleData.length; i++) {
-                org.apache.poi.ss.usermodel.Cell cell = exampleRow.createCell(i);
-                cell.setCellValue(exampleData[i]);
-            }
-            
-            for (int i = 0; i < headers.length; i++) {
-                sheet.autoSizeColumn(i);
-            }
-            
-            java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
-            workbook.write(outputStream);
-            workbook.close();
-            
+
+            byte[] templateBytes = ExcelUtil.createTemplate(headers, exampleData);
+
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=product_import_template.xlsx")
                     .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                    .body(outputStream.toByteArray());
-        } catch (IOException e) {
+                    .body(templateBytes);
+        } catch (RuntimeException e) {
             return ResponseEntity.internalServerError().build();
         }
     }
