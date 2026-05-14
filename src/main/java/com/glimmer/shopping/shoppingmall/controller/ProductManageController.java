@@ -3,19 +3,26 @@ package com.glimmer.shopping.shoppingmall.controller;
 import com.glimmer.shopping.shoppingmall.dto.ProductDTO;
 import com.glimmer.shopping.shoppingmall.util.PageResult;
 import com.glimmer.shopping.shoppingmall.dto.ProductQueryRequest;
+import com.glimmer.shopping.shoppingmall.entity.Brand;
+import com.glimmer.shopping.shoppingmall.entity.Category;
 import com.glimmer.shopping.shoppingmall.entity.Product;
+import com.glimmer.shopping.shoppingmall.repository.BrandRepository;
+import com.glimmer.shopping.shoppingmall.repository.CategoryRepository;
 import com.glimmer.shopping.shoppingmall.service.ProductService;
+import com.glimmer.shopping.shoppingmall.service.ProductBatchImportService;
 import com.glimmer.shopping.shoppingmall.util.ExcelUtil;
 import com.glimmer.shopping.shoppingmall.util.FileUtil;
 import com.glimmer.shopping.shoppingmall.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -98,17 +105,38 @@ public class ProductManageController {
         return FileUtil.getImage(fileName);
     }
 
+    @Autowired
+    private ProductBatchImportService productBatchImportService;
+
+    @Autowired
+    private BrandRepository brandRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @ApiOperation("批量导入商品")
     @PostMapping("/batch/upload")
-    public Result<Integer> batchUploadProducts(@RequestParam("file") MultipartFile file) {
+    public Result<Map<String, Object>> batchUploadProducts(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "importMode", required = false, defaultValue = "strict") String importMode,
+            @RequestParam(value = "brandName", required = false) String brandName,
+            @RequestParam(value = "categoryName", required = false) String categoryName) {
         if (!FileUtil.isValidExcelFile(file)) {
             return Result.error("请选择有效的Excel文件（.xlsx或.xls）");
         }
-        try {
-            return Result.success(0);
-        } catch (Exception e) {
-            return Result.error("批量导入失败");
-        }
+        return productBatchImportService.batchImport(file, importMode, brandName, categoryName);
+    }
+
+    @ApiOperation("获取所有品牌列表")
+    @GetMapping("/brands")
+    public Result<List<Map<String, String>>> getAllBrands() {
+        return productBatchImportService.getAllBrands();
+    }
+
+    @ApiOperation("获取所有分类列表")
+    @GetMapping("/categories")
+    public Result<List<Map<String, String>>> getAllCategories() {
+        return productBatchImportService.getAllCategories();
     }
 
     @ApiOperation("下载导入模板")
@@ -116,8 +144,8 @@ public class ProductManageController {
     public ResponseEntity<byte[]> downloadTemplate() {
         try {
             String[] headers = {
-                "商品名称", "分类", "品牌", "价格", "库存",
-                "描述", "规格", "产地", "单位", "标签", "状态"
+                "商品名称", "分类(名称或ID)", "品牌(名称或ID)", "价格", "库存",
+                "描述", "规格", "产地", "单位", "标签", "状态(0禁用/1启用)"
             };
 
             String[] exampleData = {
@@ -126,13 +154,75 @@ public class ProductManageController {
             };
 
             byte[] templateBytes = ExcelUtil.createTemplate(headers, exampleData);
+            
+            String fileName = "批量添加商品模版_" + java.time.LocalDateTime.now().format(
+                java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".xlsx";
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=product_import_template.xlsx")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + java.net.URLEncoder.encode(fileName, "UTF-8"))
                     .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                     .body(templateBytes);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @ApiOperation("下载品牌列表")
+    @GetMapping("/brands/download")
+    public ResponseEntity<byte[]> downloadBrandList() {
+        try {
+            List<Brand> brands = brandRepository.findAll();
+            String[] headers = {"品牌ID", "品牌名称"};
+            List<String[]> data = new ArrayList<>();
+            for (Brand brand : brands) {
+                data.add(new String[]{brand.getId(), brand.getName()});
+            }
+            
+            byte[] templateBytes = ExcelUtil.createDataExcel(headers, data);
+            String fileName = "品牌列表_" + java.time.LocalDateTime.now().format(
+                java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".xlsx";
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + java.net.URLEncoder.encode(fileName, "UTF-8"))
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(templateBytes);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @ApiOperation("下载分类列表")
+    @GetMapping("/categories/download")
+    public ResponseEntity<byte[]> downloadCategoryList() {
+        try {
+            List<Category> categories = categoryRepository.findAll();
+            String[] headers = {"分类ID", "分类名称", "完整路径"};
+            List<String[]> data = new ArrayList<>();
+            for (Category category : categories) {
+                String fullPath = buildCategoryPath(category);
+                data.add(new String[]{category.getId(), category.getName(), fullPath});
+            }
+            
+            byte[] templateBytes = ExcelUtil.createDataExcel(headers, data);
+            String fileName = "分类列表_" + java.time.LocalDateTime.now().format(
+                java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".xlsx";
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + java.net.URLEncoder.encode(fileName, "UTF-8"))
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(templateBytes);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private String buildCategoryPath(Category category) {
+        StringBuilder path = new StringBuilder(category.getName());
+        Category parent = category.getParent();
+        while (parent != null) {
+            path.insert(0, parent.getName() + " > ");
+            parent = parent.getParent();
+        }
+        return path.toString();
     }
 }
